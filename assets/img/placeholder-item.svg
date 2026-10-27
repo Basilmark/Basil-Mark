@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750"><defs><radialGradient id="bg" cx="50%" cy="42%" r="75%"><stop offset="0" stop-color="#f4f5f0"/><stop offset="1" stop-color="#dde2d7"/></radialGradient><radialGradient id="sh" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1a2b22" stop-opacity=".22"/><stop offset="1" stop-color="#1a2b22" stop-opacity="0"/></radialGradient><linearGradient id="br" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2c896"/><stop offset=".5" stop-color="#b8925a"/><stop offset="1" stop-color="#8a6a3a"/></linearGradient><linearGradient id="lt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a5a33"/><stop offset="1" stop-color="#6b3a1e"/></linearGradient></defs><rect width="600" height="750" fill="url(#bg)"/>
+<circle cx="300" cy="375" r="120" fill="none" stroke="url(#br)" stroke-width="4"/>
+<circle cx="300" cy="375" r="106" fill="none" stroke="#b8925a" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 6"/>
+<text x="300" y="402" text-anchor="middle" font-family="Georgia, 'Bodoni 72', serif" font-size="78" fill="#24392e">BM</text>
+</svg>
