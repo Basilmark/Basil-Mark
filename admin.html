@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin | Basil Mark</title>
+  <meta name="theme-color" content="#24392e">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..600&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin">
+  <header class="admin-bar">
+    <div class="wrap admin-bar-inner">
+      <span class="wordmark">Basil Mark <small>Admin</small></span>
+      <div class="admin-bar-actions">
+        <a href="index.html" target="_blank" rel="noopener">View site</a>
+        <button type="button" id="sign-out" class="link-btn" hidden>Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap admin-main">
+    <!-- Shown until config.js has the Supabase values -->
+    <section id="setup-notice" class="panel-card narrow" hidden>
+      <h1>Connect your store</h1>
+      <p>The admin panel needs a free Supabase project to save products and photos. The site is showing sample products until it's connected.</p>
+      <ol>
+        <li>Create a project at supabase.com.</li>
+        <li>Run <code>supabase/setup.sql</code> in its SQL Editor.</li>
+        <li>Paste the project URL and publishable key into <code>assets/js/config.js</code>.</li>
+        <li>Create your admin user, then come back to this page.</li>
+      </ol>
+      <p>The full steps are in <code>README.md</code>.</p>
+    </section>
+
+    <section id="loading" class="panel-card narrow"><p>Loading…</p></section>
+
+    <section id="login" class="panel-card narrow" hidden>
+      <h1>Sign in</h1>
+      <form id="login-form" class="form">
+        <label>Email<input type="email" name="email" autocomplete="username" required></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+        <p class="form-error" id="login-error" role="alert"></p>
+        <button class="btn btn-block" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <section id="app" hidden>
+      <nav class="tabs" role="tablist" aria-label="Admin sections">
+        <button role="tab" type="button" data-tab="products" aria-selected="true">Products</button>
+        <button role="tab" type="button" data-tab="categories" aria-selected="false">Categories</button>
+        <button role="tab" type="button" data-tab="settings" aria-selected="false">Store settings</button>
+      </nav>
+
+      <!-- PRODUCTS -->
+      <div class="tab-panel" id="tab-products" role="tabpanel">
+        <div class="panel-head">
+          <div class="filters">
+            <input type="search" id="p-search" placeholder="Search products" aria-label="Search products">
+            <select id="p-filter" aria-label="Filter by category"></select>
+          </div>
+          <button class="btn" type="button" id="add-product">Add product</button>
+        </div>
+        <p class="muted" id="p-count"></p>
+        <div class="rows" id="product-rows"></div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="tab-panel" id="tab-categories" role="tabpanel" hidden>
+        <div class="panel-head">
+          <p class="muted">Categories appear as filters in the shop and as tiles on the home page. Lower sort numbers show first.</p>
+          <button class="btn" type="button" id="add-category">Add category</button>
+        </div>
+        <div class="rows" id="category-rows"></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="tab-panel" id="tab-settings" role="tabpanel" hidden>
+        <form id="settings-form" class="form panel-card">
+          <fieldset>
+            <legend>Ordering and social links</legend>
+            <p class="hint">Leave a field empty to hide it from the site.</p>
+            <label>WhatsApp number
+              <input data-key="whatsapp_number" inputmode="tel" placeholder="03001234567 or 923001234567">
+              <span class="hint">Adds an "Order on WhatsApp" button to every product.</span>
+            </label>
+            <label>Instagram
+              <input data-key="instagram_url" placeholder="https://instagram.com/basilmark or @basilmark">
+            </label>
+            <label>Facebook page
+              <input data-key="facebook_url" placeholder="https://facebook.com/basilmark">
+            </label>
+          </fieldset>
+          <fieldset>
+            <legend>Contact details</legend>
+            <label>Email<input data-key="email" type="email"></label>
+            <label>Phone<input data-key="phone" inputmode="tel"></label>
+            <label>City<input data-key="city" placeholder="e.g. Islamabad"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Brand text</legend>
+            <label>Store name<input data-key="store_name" required></label>
+            <label>Tagline
+              <input data-key="tagline">
+              <span class="hint">The main headline on the home page.</span>
+            </label>
+            <label>About us
+              <textarea data-key="about_text" rows="8"></textarea>
+              <span class="hint">Leave a blank line between paragraphs.</span>
+            </label>
+            <label>Currency label<input data-key="currency" placeholder="Rs."></label>
+          </fieldset>
+          <button class="btn" type="submit">Save settings</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Product editor -->
+  <dialog id="product-dialog" class="sheet">
+    <form id="product-form" class="form" method="dialog" novalidate>
+      <header class="sheet-head">
+        <h2 id="product-dialog-title">Add product</h2>
+        <button type="button" class="link-btn" data-close>Close</button>
+      </header>
+      <div class="sheet-body">
+        <label>Name<input id="pf-name" required></label>
+        <label>Link name
+          <input id="pf-slug" pattern="[a-z0-9-]+" required>
+          <span class="hint">Used in the product's web address. Lowercase letters, numbers and dashes.</span>
+        </label>
+        <label>Category<select id="pf-category"></select></label>
+        <div class="two">
+          <label>Price<input id="pf-price" type="number" min="0" step="1" required></label>
+          <label>Original price (optional)
+            <input id="pf-compare" type="number" min="0" step="1">
+            <span class="hint">Shows a crossed-out price when higher than Price.</span>
+          </label>
+        </div>
+        <label>Description<textarea id="pf-desc" rows="5"></textarea></label>
+
+        <div class="field">
+          <span class="field-label">Photos</span>
+          <span class="hint">The first photo is the cover. Photos are resized automatically.</span>
+          <div class="photos" id="pf-photos"></div>
+          <label class="btn btn-outline upload-btn">Add photos
+            <input id="pf-files" type="file" accept="image/*" multiple hidden>
+          </label>
+        </div>
+
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="pf-active"> Show on site</label>
+          <label class="check"><input type="checkbox" id="pf-featured"> Feature on home page</label>
+          <label class="check"><input type="checkbox" id="pf-instock"> In stock</label>
+        </div>
+        <label class="narrow-field">Sort order<input id="pf-sort" type="number" step="1">
+          <span class="hint">Lower numbers show first.</span>
+        </label>
+        <p class="form-error" id="pf-error" role="alert"></p>
+      </div>
+      <footer class="sheet-foot">
+        <button type="button" class="btn btn-outline" data-close>Cancel</button>
+        <button type="submit" class="btn" id="pf-save">Save product</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Category editor -->
+  <dialog id="category-dialog" class="sheet">
+    <form id="category-form" class="form" method="dialog" novalidate>
+      <header class="sheet-head">
+        <h2 id="category-dialog-title">Add category</h2>
+        <button type="button" class="link-btn" data-close>Close</button>
+      </header>
+      <div class="sheet-body">
+        <label>Name<input id="cf-name" required></label>
+        <label>Link name
+          <input id="cf-slug" pattern="[a-z0-9-]+" required>
+          <span class="hint">Used in the shop's web address, e.g. shop.html?c=belts</span>
+        </label>
+        <label>Description (optional)<textarea id="cf-desc" rows="3"></textarea></label>
+        <div class="field">
+          <span class="field-label">Tile image (optional)</span>
+          <span class="hint">If empty, the first product photo in this category is used.</span>
+          <div class="photos" id="cf-photo"></div>
+          <label class="btn btn-outline upload-btn">Choose image
+            <input id="cf-file" type="file" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="two">
+          <label>Sort order<input id="cf-sort" type="number" step="1"></label>
+          <label class="check check-inline"><input type="checkbox" id="cf-active"> Show on site</label>
+        </div>
+        <p class="form-error" id="cf-error" role="alert"></p>
+      </div>
+      <footer class="sheet-foot">
+        <button type="button" class="btn btn-outline" data-close>Cancel</button>
+        <button type="submit" class="btn" id="cf-save">Save category</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>
