@@ -10,8 +10,8 @@
 // =====================================================================
 
 export const CONFIG = {
-  supabaseUrl: '',      // e.g. 'https://abcdefghijkl.supabase.co'
-  supabaseAnonKey: '',  // starts with 'sb_publishable_' or 'eyJ...'
+  supabaseUrl: 'https://vgnogxugqopeazfxctsf.supabase.co',      // e.g. 'https://abcdefghijkl.supabase.co'
+  supabaseAnonKey: 'sb_publishable_J0N-TQBUyicTSiOenSYH0A_PeQPdx2g',  // starts with 'sb_publishable_' or 'eyJ...'
 
   // Name of the photo storage bucket created by supabase/setup.sql
   imageBucket: 'product-images',
